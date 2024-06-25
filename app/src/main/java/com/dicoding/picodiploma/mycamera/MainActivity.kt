@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         binding.uploadButton.setOnClickListener { uploadImage() }
     }
 
+
     private val launcherGallery =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
             if (uri != null) {
@@ -57,8 +58,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        Toast.makeText(this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show()
+        currentImageUri = getImageUri(this)
+        launcherIntentCamera.launch(currentImageUri)
     }
+
+    private val launcherIntentCamera =
+        registerForActivityResult(ActivityResultContracts.TakePicture())
+        { isSuccess ->
+            if (isSuccess) {
+                showImage()
+            }
+        }
 
     private fun startCameraX() {
         Toast.makeText(this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show()
