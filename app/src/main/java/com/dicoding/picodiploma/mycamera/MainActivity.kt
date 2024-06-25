@@ -139,6 +139,19 @@ class MainActivity : AppCompatActivity() {
                 imageFile.name,
                 requestImageFile
             )
+            lifecycleScope.launch {
+                try {
+                    val apiService = ApiConfig.getApiService()
+                    val successResponse = apiService.uploadImage(multipartBody, requestBody)
+                    showToast(successResponse.message)
+                    showLoading(false)
+                } catch (e: HttpException) {
+                    val errorBody = e.response()?.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, FileUploadResponse::class.java)
+                    showToast(errorResponse.message)
+                    showLoading(false)
+                }
+            }
         } ?: showToast(getString(R.string.empty_image_warning))
     }
 
