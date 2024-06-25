@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat
 import com.dicoding.picodiploma.mycamera.databinding.ActivityMainBinding
 import android.Manifest
 import android.content.Intent
+import androidx.core.net.toUri
+import com.dicoding.picodiploma.mycamera.CameraActivity.Companion.CAMERAX_RESULT
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +28,15 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permission request denied", Toast.LENGTH_LONG).show()
             }
         }
+
+    private val launcherIntentCameraX = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == CAMERAX_RESULT) {
+            currentImageUri = it.data?.getStringExtra(CameraActivity.EXTRA_CAMERAX_IMAGE)?.toUri()
+            showImage()
+        }
+    }
 
     private fun allPermissionGranted() = ContextCompat.checkSelfPermission(
         this,
@@ -98,7 +109,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startCameraX() {
         val intent = Intent(this, CameraActivity::class.java)
-        startActivity(intent)
+        launcherIntentCameraX.launch(intent)
     }
 
     private fun uploadImage() {
