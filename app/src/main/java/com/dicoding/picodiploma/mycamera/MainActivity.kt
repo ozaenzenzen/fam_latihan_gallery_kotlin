@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
     val pickMultipleMedia =
         registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
             if (uris.isNotEmpty()) {
+                currentImageUri = uris[0]
                 Log.d("PhotoPicker", "Number of items selected: ${uris.size}")
             } else {
                 Log.d("PhotoPicker", "No media selected")
