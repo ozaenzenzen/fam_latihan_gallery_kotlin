@@ -12,8 +12,19 @@ import androidx.core.content.ContextCompat
 import com.dicoding.picodiploma.mycamera.databinding.ActivityMainBinding
 import android.Manifest
 import android.content.Intent
+import android.view.View
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
 import com.dicoding.picodiploma.mycamera.CameraActivity.Companion.CAMERAX_RESULT
+import com.dicoding.picodiploma.mycamera.data.api.ApiConfig
+import com.dicoding.picodiploma.mycamera.data.api.FileUploadResponse
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 
 class MainActivity : AppCompatActivity() {
 
@@ -114,7 +125,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun uploadImage() {
-        Toast.makeText(this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show()
+        currentImageUri?.let { uri ->
+            val imageFile = uriToFile(uri, this)
+            Log.d("Image File", "showImage: ${imageFile.path}")
+            val description = "Ini adalah deskripsi gambar"
+
+            showLoading(true)
+
+            val requestBody = description.toRequestBody("text/plain".toMediaType())
+            val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
+            val multipartBody = MultipartBody.Part.createFormData(
+                "photo",
+                imageFile.name,
+                requestImageFile
+            )
+        } ?: showToast(getString(R.string.empty_image_warning))
     }
 
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 }
